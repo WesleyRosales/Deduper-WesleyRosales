@@ -2,6 +2,7 @@
 PCR duplicates are sequences that originate from the same DNA molecule. This introduces introduces false sequences in the dataset and must be removed prior to analysis.
 
 ## Examples
+```
 14 test input rows (2 for each category) that test:                             Expected Action:
 Soft clipping adjusted to match another non-soft clipped sequence               Keep 1 (the non-soft clipped sequence)
 Soft clipping that adjust to unique rows                                        Keep 2
@@ -11,6 +12,7 @@ Same UMI and same position                                                      
 Different UMI and different position                                            Keep 2
 Error in UMI and different position                                             Keep 0
                                                                                 Total: 10 rows in output
+```
 
 ## Pseudocode
 PCR duplicates can be identified by having the same chromosome (col 3), position (col 4), strand (col 2), and Unique Molecular Index (UMI). This program should check for matches in these 4 categories as well as consider soft clipping in the algorithm.
