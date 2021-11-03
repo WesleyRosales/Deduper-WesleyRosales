@@ -102,7 +102,11 @@ umi_file.close()
 input_file = open(args.file, "r")
 output_file = open(args.output, "w")
 
-position_list = []
+position_dict = {}
+for umi in umi_list:
+    position_dict[umi] = []
+previous_chr = "0"
+previous_ident = ""
 while True:
     inp_line = input_file.readline()
     inp_list = inp_line.split("\t")
@@ -114,6 +118,12 @@ while True:
         output_file.writelines(inp_line)
         continue
     
+    #to speed up processing of reads, reset position list after every chromosome
+    if inp_list[2] != previous_chr:
+        for umi in umi_list:
+            position_dict[umi] = []
+        previous_chr = inp_list[2]
+
     # isolate UMI
     umi = findUMI(inp_list[0])
 
@@ -128,10 +138,13 @@ while True:
                                 inp_list[5], 
                                 int(inp_list[3])))])
 
-    if ident not in position_list and umi in umi_list:
-        output_file.writelines(inp_line)
-        position_list.append(ident)
+    #any reads with identical position identification will be PCR duplicates because they have the same UMI, strand, chromosome, and position.
+    if ident != previous_ident:
+        if umi in umi_list:
+            if ident not in position_dict[umi]:
+                previous_ident = ident[:]
+                output_file.writelines(inp_line)
+                position_dict[umi].append(ident)
 
 input_file.close()
 output_file.close()
-
